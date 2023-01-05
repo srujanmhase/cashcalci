@@ -125,3 +125,6 @@ app.*.map.json
 !.idea/codeStyles/
 !.idea/dictionaries/
 !.idea/runConfigurations/
+
+#API Key
+lib/constants/key.dart
