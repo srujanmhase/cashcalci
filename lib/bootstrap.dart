@@ -3,6 +3,9 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/widgets.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+late Box box;
 
 class AppBlocObserver extends BlocObserver {
   @override
@@ -24,7 +27,8 @@ Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
   };
 
   Bloc.observer = AppBlocObserver();
-
+  await Hive.initFlutter();
+  box = await Hive.openBox('cash');
   await runZonedGuarded(
     () async => runApp(await builder()),
     (error, stackTrace) => log(error.toString(), stackTrace: stackTrace),
