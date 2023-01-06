@@ -17,6 +17,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   google_fonts:
+  hive:
+  hive_flutter:
   provider:
   intl: ^0.17.0
 
@@ -26,6 +28,7 @@ dev_dependencies:
   freezed: ^2.2.0
   flutter_test:
     sdk: flutter
+  hive_generator:
   mocktail: ^0.3.0
   very_good_analysis: ^3.1.0
   json_serializable: ^6.5.1
