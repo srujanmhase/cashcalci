@@ -1,4 +1,4 @@
-import 'package:cashcalci/counter/counter.dart';
+import 'package:cashcalci/app/view/home.dart';
 import 'package:cashcalci/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +16,7 @@ class App extends StatelessWidget {
       ),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const CounterPage(),
+      home: const HomePage(),
     );
   }
 }
