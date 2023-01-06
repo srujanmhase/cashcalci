@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bloc/bloc.dart';
 import 'package:cashcalci/bootstrap.dart';
 import 'package:cashcalci/models/latest/latest.dart';
@@ -43,7 +41,28 @@ class AppCubit extends Cubit<AppState> {
     if (second == null) {
       errMap['ipTwo'] = true;
     }
-    var newState = AppState();
+
+    var newState = AppState(
+      cached: state.cached,
+      calculating: state.calculating,
+      calculationResult: state.calculationResult,
+      conversionResult: state.conversionResult,
+      currencies: state.currencies,
+      currencyFetchError: state.currencyFetchError,
+      error: state.error,
+      ipCurrency: state.ipCurrency,
+      ipCurrencyError: state.ipCurrencyError,
+      ipOne: state.ipOne,
+      ipOneError: state.ipOneError,
+      ipTwo: state.ipTwo,
+      ipTwoError: state.ipTwoError,
+      offline: state.offline,
+      opCurrency: state.opCurrency,
+      opCurrencyError: state.opCurrencyError,
+      operation: state.operation,
+      operationError: state.operationError,
+    );
+
     for (final entry in errMap.entries) {
       if (entry.value) {
         newState = stateModifier(entry.key, newState);
@@ -77,11 +96,12 @@ class AppCubit extends Cubit<AppState> {
       return emit(
         state.copyWith(
           offline: false,
+          calculating: false,
           calculationResult: calculationResult,
           conversionResult: conversionResult,
         ),
       );
-    } on SocketException {
+    } on NoConnection catch (e) {
       final cacheRate = fetchRatesData(
         state.ipCurrency ?? '',
         state.opCurrency ?? '',
@@ -102,6 +122,7 @@ class AppCubit extends Cubit<AppState> {
       return emit(
         state.copyWith(
           offline: true,
+          calculating: false,
           calculationResult: calculationResult,
           conversionResult: conversionResult,
         ),
@@ -112,6 +133,13 @@ class AppCubit extends Cubit<AppState> {
   }
 
   Future<void> fetchCurrencies() async {
+    if (state.currencies?.isNotEmpty ?? false) {
+      return emit(
+        state.copyWith(
+          currencies: state.currencies,
+        ),
+      );
+    }
     try {
       final data = await symbolsProvider.fetchSymbols();
       return emit(
@@ -192,15 +220,30 @@ class AppCubit extends Cubit<AppState> {
 AppState stateModifier(String key, AppState state) {
   switch (key) {
     case 'ipCurrency':
-      return state.copyWith(ipCurrencyError: true);
+      return state.copyWith(
+        ipCurrencyError: true,
+        calculating: false,
+      );
     case 'opCurrency':
-      return state.copyWith(opCurrencyError: true);
+      return state.copyWith(
+        opCurrencyError: true,
+        calculating: false,
+      );
     case 'ipOne':
-      return state.copyWith(ipOneError: true);
+      return state.copyWith(
+        ipOneError: true,
+        calculating: false,
+      );
     case 'ipTwo':
-      return state.copyWith(ipTwoError: true);
+      return state.copyWith(
+        ipTwoError: true,
+        calculating: false,
+      );
     case 'operation':
-      return state.copyWith(operationError: true);
+      return state.copyWith(
+        operationError: true,
+        calculating: false,
+      );
     default:
       return state;
   }
@@ -223,25 +266,36 @@ double calculator(double first, double second, Operation? op) {
 }
 
 Future<void> addRatesData(String base, Latest? data) async {
-  await box.add({
-    'base_c': base,
-    'rate_c': data?.rates.entries.first.key,
-    'rate_v': data?.rates.entries.first.value,
-    'time': data?.timestamp,
-  });
+  // await box.add({
+  //   'base_c': base,
+  //   'rate_c': data?.rates.entries.first.key,
+  //   'rate_v': data?.rates.entries.first.value,
+  //   'time': data?.timestamp,
+  // });
+  for (var i = 0; i < box.values.length; i++) {
+    final value = box.getAt(i) as List<dynamic>;
+    if (value.contains(base) && value.contains(data?.rates.entries.first.key)) {
+      await box.deleteAt(i);
+    }
+  }
+  await box.add([
+    base,
+    data?.rates.entries.first.key,
+    data?.rates.entries.first.value,
+    data?.timestamp
+  ]);
 }
 
 double? fetchRatesData(String base, String rateCurrency) {
   for (final element in box.values) {
-    final value = element as Map<String, dynamic>;
-    final bothExist =
-        value.containsValue(base) && value.containsValue(rateCurrency);
+    final value = element as List<dynamic>;
+    final bothExist = value.contains(base) && value.contains(rateCurrency);
     if (bothExist) {
-      if (base == value['base_c']) {
-        return value['rate_v'] as double;
+      if (base == value[0]) {
+        return value[2] as double;
       }
 
-      final rate = 1 / (double.tryParse(value['rate_v'].toString()) ?? 0);
+      final rate = 1 / (double.tryParse(value[2].toString()) ?? 0);
       return rate;
     }
   }
