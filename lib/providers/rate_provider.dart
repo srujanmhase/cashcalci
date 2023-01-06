@@ -21,11 +21,14 @@ class RateProvider {
         return data;
       }
       return null;
-    } on SocketException {
-      debugPrint('socket exception');
-    } catch (e) {
+    } on DioError catch (e) {
       debugPrint(e.toString());
+      if (e.type == DioErrorType.other) {
+        throw NoConnection();
+      }
       throw Exception('Error');
     }
   }
 }
+
+class NoConnection implements Exception {}
