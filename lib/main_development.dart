@@ -21,7 +21,7 @@ void main() {
           ),
         ),
       ],
-      child: const App(),
+      builder: (context, child) => const App(),
     ),
   );
 }
