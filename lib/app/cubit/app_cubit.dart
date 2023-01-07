@@ -4,6 +4,7 @@ import 'package:cashcalci/models/latest/latest.dart';
 import 'package:cashcalci/models/operations.dart';
 import 'package:cashcalci/providers/rate_provider.dart';
 import 'package:cashcalci/providers/symbols_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'app_state.dart';
@@ -78,7 +79,7 @@ class AppCubit extends Cubit<AppState> {
     try {
       result = calculator(first ?? 0, second ?? 0, state.operation);
     } catch (e) {
-      return emit(state.copyWith(error: 'An error occured'));
+      return emit(state.copyWith(error: 'An error occured i'));
     }
 
     try {
@@ -86,7 +87,12 @@ class AppCubit extends Cubit<AppState> {
         base: state.ipCurrency ?? '',
         symbol: state.opCurrency ?? '',
       );
-      await addRatesData(state.ipCurrency ?? '', latest);
+
+      try {
+        await addRatesData(state.ipCurrency ?? '', latest);
+      } catch (e) {
+        debugPrint('error adding rates data');
+      }
 
       final value = result * (latest?.rates[state.opCurrency] ?? 0);
       final calculationResult =
@@ -128,7 +134,7 @@ class AppCubit extends Cubit<AppState> {
         ),
       );
     } catch (e) {
-      return emit(state.copyWith(error: 'An error occured'));
+      return emit(state.copyWith(error: 'An error occured ii'));
     }
   }
 
