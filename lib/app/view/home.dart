@@ -134,7 +134,6 @@ class _HomePageState extends State<HomePage> {
                                         border: InputBorder.none,
                                       ),
                                       onChanged: (value) {
-                                        print(value);
                                         context
                                             .read<AppCubit>()
                                             .setFirstInputValue(
@@ -399,15 +398,13 @@ class _HomePageState extends State<HomePage> {
                           if (state.calculating) return;
                           if (state.calculationResult != null ||
                               state.error != null) {
-                            print('reseting');
                             context.read<AppCubit>().reset();
                           } else {
-                            print('calc');
                             context.read<AppCubit>().calculate();
                           }
                         },
                         child: Container(
-                          height: 110,
+                          height: 80,
                           width: MediaQuery.of(context).size.width,
                           decoration: BoxDecoration(
                             color: Colors.black,
@@ -438,6 +435,7 @@ class _HomePageState extends State<HomePage> {
                         state.error ?? '',
                         textAlign: TextAlign.center,
                       ),
+                      Text(state.offline ? 'Cached result' : ''),
                     ],
                   );
                 },
