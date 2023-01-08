@@ -1,5 +1,13 @@
 # Cashcalci
 
+Performs operations on the inputs, scans for errors in input, highlights them, completes calculation, fetches currency to be selected as input or output currency, converts the calculated amount to desired output currency. In case data is not available from network, data is fetched from, cache:
+    if INR -> USD rate is stored, the rate is returned and conversion takes place.
+    if INR -> USD rate is stored and the input currency is USD and output currency is INR, the reciprocal of the rate is taken and conversion takes place, provided the device is offline.
+    Every time rate is stored, it checks for any stale rates and removes them before adding new one.
+
+Tests for all cubits and providers are written.
+
+
 ![coverage][coverage_badge]
 [![style: very good analysis][very_good_analysis_badge]][very_good_analysis_link]
 [![License: MIT][license_badge]][license_link]
