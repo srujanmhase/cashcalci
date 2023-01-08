@@ -426,8 +426,18 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       ),
-                      Text(state.calculationResult ?? ''),
-                      Text(state.conversionResult ?? ''),
+                      Text(
+                        state.calculationResult ?? '',
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        state.conversionResult ?? '',
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        state.error ?? '',
+                        textAlign: TextAlign.center,
+                      ),
                     ],
                   );
                 },
