@@ -16,7 +16,7 @@ dependencies:
   flutter_bloc: ^8.1.1
   flutter_localizations:
     sdk: flutter
-  google_fonts:
+  google_fonts: ^4.0.3
   hive:
   hive_flutter:
   provider:
